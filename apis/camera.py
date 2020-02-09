@@ -6,12 +6,12 @@ from flask import Blueprint, jsonify, request
 from app import db, Camera, Thumbnail
 
 # Load ENV Values
-ROOT_PATH = os.getenv("ROOT_PATH")
+ROOT_PATH = "./thumbnails"
 
 # RETURN blueprint FILE
 def create_camera_blueprint(blueprint_name : str, resource_type: str, resource_prefix: str) -> Blueprint:
     blueprint = Blueprint(blueprint_name, __name__)
-
+    
     # desc: Get cameras OF THE table
     # path: /cameras [GET]
     @blueprint.route(f'/{resource_prefix}', methods=['GET'])

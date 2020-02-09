@@ -7,10 +7,10 @@ import os
 # LOAD ENV VALUES
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URI")
-ROOT_PATH = os.getenv("ROOT_PATH")
+ROOT_PATH = "./thumbnails"
 
 # Create APP Instance
-app = Flask(__name__)
+app = Flask(__name__, static_folder=ROOT_PATH)
 
 # SET DATABASE URI in CONFIG
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
