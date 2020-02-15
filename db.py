@@ -4,7 +4,7 @@ def create_database(database_name):
     
     #establishing the connection
     conn = psycopg2.connect(
-    database="postgres", user='postgres', password='iwantbefree', host='127.0.0.1', port= '5432'
+    database="postgres", user='postgres', password='postgres', host='127.0.0.1', port= '5432'
     )
     conn.autocommit = True
 

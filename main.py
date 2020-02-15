@@ -10,6 +10,9 @@ from apis.camera import create_camera_blueprint
 from apis.thumbnail import create_thumbnail_blueprint
 from apis.video import create_video_blueprint
 
+# LOAD ENV VARIABLE
+HOST = os.getenv("HOST")
+
 create_database("db_products")
 
 # CREATE & MIGRATE THE TABLE
@@ -31,4 +34,4 @@ app.register_blueprint(create_video_blueprint(
 
 # RUN THE APP IN PORT 5000
 if __name__ == "__main__":
-    app.run(host="192.168.103.112", port=5000, debug=True)
+    app.run(host=HOST, port=5000, debug=True)
