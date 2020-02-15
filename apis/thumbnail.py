@@ -7,42 +7,42 @@ import datetime
 from app import db, Camera, Thumbnail
 
 # Load ENV Values
-ROOT_PATH = "./thumbnails"
+ROOT_PATH = "./share"
 
 # RANDOM Path
-RANDOM_PATH = "./thumbnails/random"
+RANDOM_PATH = "./share/random/thumbnails"
 
-# RETURN blueprint FILE
+# RETURN BLUEPRINT FILE
 
 
 def create_thumbnail_blueprint(blueprint_name: str, resource_type: str, resource_prefix: str) -> Blueprint:
     blueprint = Blueprint(blueprint_name, __name__)
 
     # ============================================================================================
-    # desc: ADD RANDOM images
+    # desc: ADD RANDOM IMAGES
     # path: /test [GET]
     @blueprint.route(f'/{resource_prefix}/random/<camera_id>', methods=['GET'])
     def create_random(camera_id):
-        date = datetime.datetime(2022, 8, 1, 12, 20, 5)
+        date = datetime.datetime(2023, 2, 1, 12, 20, 5)
         for i in range(0, 300):
             date += datetime.timedelta(seconds=2)
-            imgpath = "/thumbnails/random/{}.jpg"
+            imgpath = "/share/random/thumbnails/{}.jpg"
             imgpath = imgpath.format(i)
             db.session.add(Thumbnail(imgpath, date, camera_id))
         db.session.commit()
         return "success"
 
-    # desc: ADD NEW Thumbnail IN THE table & UPDATE the CAMERA THUMBNAIL
+    # desc: ADD NEW THUMBNAIL IN THE TABLE & UPDATE THE CAMERA THUMBNAIL
     # path: /thumbnail [POST]
     @blueprint.route(f'/{resource_prefix}', methods=['POST'])
     def create_thumbnail():
-        # ADD NEW Thumbnail
+        # ADD NEW THUMBNAIL
         body = request.get_json()
         db.session.add(
             Thumbnail(body['path'], body['time'], body['camera_id']))
         db.session.commit()
 
-        # UPDATE THUMBNAIL of CAMERA
+        # UPDATE THUMBNAIL OF CAMERA
         db.session.query(Camera).filter_by(id=body['camera_id']).update(
             dict(thumbnail=body['path']))
         db.session.commit()
@@ -55,7 +55,7 @@ def create_thumbnail_blueprint(blueprint_name: str, resource_type: str, resource
     def vod_mod(id):
         return jsonify({"id": id, "action": "VOD MOD"})
 
-    # desc: GET Thumbnails WITH FILTERS
+    # desc: GET THUMBNAILS WITH FILTERS
     # path: /thumbnail/<camera_id>/<start>/<end>/<duration> [GET]
     @blueprint.route(f'/{resource_prefix}/<camera_id>/<start>/<end>/<duration>', methods=['GET'])
     def search_thumbnail(camera_id, start, end, duration):
