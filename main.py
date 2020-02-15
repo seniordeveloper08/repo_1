@@ -1,7 +1,7 @@
 # LOAD STANDARD PACKAGE
 import os
 from flask import request, jsonify
-
+from db import create_database
 # LOAD CUSTOMIZED PACKAGE
 from app import app, db, Camera, Thumbnail
 
@@ -9,6 +9,8 @@ from app import app, db, Camera, Thumbnail
 from apis.camera import create_camera_blueprint
 from apis.thumbnail import create_thumbnail_blueprint
 from apis.video import create_video_blueprint
+
+create_database("db_products")
 
 # CREATE & MIGRATE THE TABLE
 @app.before_first_request
