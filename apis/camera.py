@@ -1,6 +1,7 @@
 # LOAD STANDARD PACKAGE
 import os
 from flask import Blueprint, jsonify, request
+import threading
 
 # LOAD CUSTOMIZED PACKAGE
 from app import db, Camera, Thumbnail
@@ -53,8 +54,13 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
             Camera(body['name'], body['ipaddress'], body['location'], body["thumbnail"], body["online"]))
         db.session.commit()
 
+        camera = {}
+        for item in db.session.query(Camera).all():
+            del item.__dict__['_sa_instance_state']
+            camera = item.__dict__
+
         # CREATE NEW SUB ROOT DIR FOR NEW CAMERA
-        sub_root = os.path.join(ROOT_PATH, body['ipaddress'])
+        sub_root = os.path.join(ROOT_PATH, '{}'.format(camera["id"]))
         os.mkdir(sub_root)
 
         # CREATE DIR FOR VIDEO STORE
@@ -65,6 +71,6 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
         thumbnail_dir = os.path.join(sub_root, "thumbnails")
         os.mkdir(thumbnail_dir)
 
-        return "NEW CAMERA ADDED"
+        return camera
 
     return blueprint

@@ -8,7 +8,7 @@ first = 0
 flag = 0
 index = 0
 ct = datetime.datetime.now()
-def new_buffer(sink, data):
+def new_buffer(sink, data, location):
     global first
     global flag
     global ct
@@ -29,7 +29,7 @@ def new_buffer(sink, data):
         flag = 1
     if((buf.pts - first) > 2000000000):
         print("./videos/output{}.jpeg".format(index), "-", ct, buf.pts)
-        binary_file = open("./videos/output{}.jpeg".format(index), "ab")
+        binary_file = open("../share/{}/thumbnails/output{}.jpeg".format(location, index), "ab")
         binary_file.write(buffer)
         binary_file.close()
         flag = 0
@@ -41,15 +41,14 @@ def new_buffer(sink, data):
 class JpegSink:
     def __new__(
         cls,
-        location: str,
-        playlist_location: str,
+        location: int,
     ) -> Gst.Element:
 
         print('sink')
 
         sink = Gst.ElementFactory.make("appsink")
         sink.set_property("emit-signals", True)
-        sink.connect("new-sample", new_buffer, sink)
+        sink.connect("new-sample", new_buffer, sink, location)
       
         bin = Gst.Bin()
         bin.add(sink)

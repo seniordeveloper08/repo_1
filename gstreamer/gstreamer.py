@@ -4,7 +4,7 @@ from gi.repository import GObject, Gst
 from sources import RTSPH264Source
 from utils import must_link
 from converter import H264Decode
-from sink import HLSAPPSINK, OSDH264RTMPSink
+from sink import HLSAPPSINK
 from jpegenc import JpegSink
 import threading
 
@@ -18,7 +18,6 @@ def CCTV_VOD_THUMBNAIL(camera_id):
 
     # Variables.
     rtsp_uri = "rtsp://83.229.5.36:1935/vod/sample.mp4"
-    rtmp_uri = "rtmp://localhost:1935/show/stream"
     # Video elements.
 
     src = RTSPH264Source(rtsp_uri)   #### de soruce to video using H264
@@ -29,14 +28,12 @@ def CCTV_VOD_THUMBNAIL(camera_id):
     pipeline.add(decoder)
 
     recording_sink = HLSAPPSINK(
-        location="./videos/lssink.%05d.jpeg",
-        playlist_location="/mnt/hls1/plylist.m3u8",
+        location=camera_id
     )
     pipeline.add(recording_sink)
 
     jpeg_sink = JpegSink(
-        location="./videos/lssink.%05d.jpeg",
-        playlist_location="/mnt/hls1/plylist.m3u8",
+        location=camera_id
     )
     pipeline.add(jpeg_sink)
 
@@ -94,5 +91,3 @@ def CCTV_VOD_THUMBNAIL(camera_id):
             break
 
     pipeline.set_state(Gst.State.NULL)
-
-threading.Thread(target=CCTV_VOD_THUMBNAIL, args=(10,)).start()

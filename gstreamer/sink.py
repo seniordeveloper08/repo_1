@@ -8,7 +8,7 @@ first = 0
 flag = 0
 index = 0
 ct = datetime.datetime.now()
-def new_buffer(sink, data):
+def new_buffer(sink, data, location):
     global first
     global flag
     global ct
@@ -27,7 +27,7 @@ def new_buffer(sink, data):
         ct = datetime.datetime.now()
         index +=1
         flag = 1
-    binary_file = open("./videos/output{}.ts".format(index), "ab")
+    binary_file = open("../share/{}/videos/output{}.ts".format(location, index), "ab")
     binary_file.write(buffer)
     binary_file.close()
     if((buf.pts - first) > 2000000000):
@@ -41,15 +41,14 @@ def new_buffer(sink, data):
 class HLSAPPSINK:
     def __new__(
         cls,
-        location: str,
-        playlist_location: str,
+        location: int
     ) -> Gst.Element:
 
         print('sink')
 
         sink = Gst.ElementFactory.make("appsink")
         sink.set_property("emit-signals", True)
-        sink.connect("new-sample", new_buffer, sink)
+        sink.connect("new-sample", new_buffer, sink, location)
         # sink.set_property("location", location)
         # sink.set_property("target-duration", 5)
         # sink.set_property("playlist-location", playlist_location)
