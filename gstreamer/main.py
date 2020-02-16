@@ -15,7 +15,8 @@ while(True):
             query = "UPDATE camera SET online = 'YES' where id = {}".format(item[0]);
             run_query(query)
             thread_list.append(item[0])
-            threading.Thread(target=CCTV_VOD_THUMBNAIL, args=(item[0],)).start()
+            threading.Thread(target=CCTV_VOD_THUMBNAIL, args=(item[0], item[2],)).start()
+
         if (item[5] == "NO"):
             thread_list.remove(item[0])
     print(thread_list)

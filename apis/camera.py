@@ -1,18 +1,17 @@
 # LOAD STANDARD PACKAGE
 import os
 from flask import Blueprint, jsonify, request
-import threading
+from dotenv import load_dotenv
 
 # LOAD CUSTOMIZED PACKAGE
-from app import db, Camera, Thumbnail
+from app import db, Camera
 from sqlalchemy import or_
 
 # Load ENV Values
-ROOT_PATH = "./share"
+load_dotenv()
+ROOT_PATH = os.getenv("ROOT_PATH")
 
 # RETURN blueprint FILE
-
-
 def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_prefix: str) -> Blueprint:
     blueprint = Blueprint(blueprint_name, __name__)
 
@@ -60,7 +59,8 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
             camera = item.__dict__
 
         # CREATE NEW SUB ROOT DIR FOR NEW CAMERA
-        sub_root = os.path.join(ROOT_PATH, '{}'.format(camera["id"]))
+        path = ".{}".format(ROOT_PATH)
+        sub_root = os.path.join(path, '{}'.format(camera["id"]))
         os.mkdir(sub_root)
 
         # CREATE DIR FOR VIDEO STORE

@@ -3,7 +3,7 @@ import os
 from flask import request, jsonify
 from db import create_database
 # LOAD CUSTOMIZED PACKAGE
-from app import app, db, Camera, Thumbnail
+from app import app, db
 
 # LOAD BLUEPRINT FILES FOR ROUTING
 from apis.camera import create_camera_blueprint
@@ -12,8 +12,9 @@ from apis.video import create_video_blueprint
 
 # LOAD ENV VARIABLE
 HOST = os.getenv("HOST")
+DB_NAME = os.getenv("DB_NAME")
 
-create_database("db_products")
+create_database(DB_NAME)
 
 # CREATE & MIGRATE THE TABLE
 @app.before_first_request

@@ -4,6 +4,13 @@ from gi.repository import Gst
 from utils import must_link
 from datetime import datetime;
 import requests
+from dotenv import load_dotenv
+import os
+
+# LOAD ENV VALUES
+load_dotenv()
+
+ROOT_PATH = os.getenv("ROOT_PATH")
 
 REQUEST_URL = "http://localhost:5000/api/thumbnails"
 
@@ -29,9 +36,8 @@ class JpegSink:
             self.index +=1
             self.flag = 1
         if((buf.pts - self.first) > 2000000000):
-            path = "./share/{}/thumbnails/output{}.jpeg".format(location, self.index)
-            print("./videos/output{}.jpeg".format(self.index), "-", self.ct, buf.pts)
-            binary_file = open("../share/{}/thumbnails/output{}.jpeg".format(location, self.index), "ab")
+            path = "{}/{}/thumbnails/output{}.jpeg".format(ROOT_PATH, location, self.index)
+            binary_file = open("..{}/{}/thumbnails/output{}.jpeg".format(ROOT_PATH,location, self.index), "ab")
             binary_file.write(buffer)
             binary_file.close()
 

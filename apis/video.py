@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 import datetime
 
 # LOAD CUSTOMIZED PACKAGE
-from app import db, Camera, Thumbnail, Video
+from app import db, Video
 
 # Load ENV Values
 ROOT_PATH = "./share"
@@ -59,8 +59,10 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
             del item.__dict__['_sa_instance_state']
             output = output+"#EXTINF:2.000000,\n"+item.__dict__["path"]+"\n"
         output += "#EXT-X-ENDLIST"
-        f = open("./share/random/videos/output1.m3u8", "w")
+        path = ".{}/".format(ROOT_PATH)
+        f = open(path, "w")
         f.write(output)
         f.close()
-        return jsonify("/share/random/videos/output1.m3u8")
+        path = "{}/".format(ROOT_PATH)
+        return jsonify(path)
     return blueprint

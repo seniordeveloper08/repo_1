@@ -2,15 +2,17 @@
 import os
 from flask import Blueprint, jsonify, request
 import datetime
+from dotenv import load_dotenv
 
 # LOAD CUSTOMIZED PACKAGE
 from app import db, Camera, Thumbnail
 
 # Load ENV Values
-ROOT_PATH = "./share"
+load_dotenv()
+ROOT_PATH = os.getenv("ROOT_PATH")
 
 # RANDOM Path
-RANDOM_PATH = "./share/random/thumbnails"
+RANDOM_PATH = os.getenv("RANDOM_PATH")
 
 # RETURN BLUEPRINT FILE
 

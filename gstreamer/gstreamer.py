@@ -12,13 +12,13 @@ from db import run_query
 Gst.init(None)
 GObject.threads_init()
 
-def CCTV_VOD_THUMBNAIL(camera_id):
+def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url):
 
     pipeline = Gst.Pipeline()
     bus = pipeline.get_bus()
 
-    # Variables.
-    rtsp_uri = "rtsp://83.229.5.36:1935/vod/sample.mp4"
+    # TEST : "rtsp://83.229.5.36:1935/vod/sample.mp4"
+    rtsp_uri = rtsp_url
     # Video elements.
 
     src = RTSPH264Source(rtsp_uri)   #### de soruce to video using H264
@@ -81,12 +81,12 @@ def CCTV_VOD_THUMBNAIL(camera_id):
             if message == None:
                 pass
             elif message.type == Gst.MessageType.EOS:
-                query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id);
+                query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id)
                 run_query(query)
                 print("END")
                 break
             elif message.type == Gst.MessageType.ERROR:
-                query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id);
+                query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id)
                 run_query(query)
                 error, debug = message.parse_error()
                 print("ERROR")

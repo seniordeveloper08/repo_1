@@ -4,12 +4,13 @@ from gi.repository import Gst
 from utils import must_link
 from datetime import datetime
 import requests
+from dotenv import load_dotenv
+import os
 
-first = 0
-flag = 0
-index = 0
-ct = datetime.now()
+# LOAD ENV VALUES
+load_dotenv()
 
+ROOT_PATH = os.getenv("ROOT_PATH")
 REQUEST_URL = "http://localhost:5000/api/videos"
 
 class HLSAPPSINK:
@@ -34,12 +35,11 @@ class HLSAPPSINK:
             self.ct = datetime.now()
             self.index +=1
             self.flag = 1
-        binary_file = open("../share/{}/videos/output{}.ts".format(location, self.index), "ab")
+        binary_file = open("..{}/{}/videos/output{}.ts".format(ROOT_PATH, location, self.index), "ab")
         binary_file.write(buffer)
         binary_file.close()
         if((buf.pts - self.first) > 2000000000):
-            path = "./share/{}/videos/output{}.ts".format(location, self.index)
-            print("./videos/output{}.ts".format(self.index), "-", self.ct, buf.pts)
+            path = "{}/{}/videos/output{}.ts".format(ROOT_PATH, location, self.index)
             self.flag = 0
             self.first = buf.pts
         

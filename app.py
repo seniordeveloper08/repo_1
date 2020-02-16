@@ -6,8 +6,13 @@ import os
 
 # LOAD ENV VALUES
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URI")
-ROOT_PATH = "./share"
+ROOT_PATH = os.getenv("ROOT_PATH")
+
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_IP = os.getenv("DB_IP")
+DB_NAME = os.getenv("DB_NAME")
+DATABASE_URL = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, DB_IP, DB_NAME)
 
 # CREATE APP OBJECT
 app = Flask(__name__, static_folder=ROOT_PATH)
@@ -21,7 +26,7 @@ db = SQLAlchemy(app)
 class Camera(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(80), nullable=False)
-  ipaddress = db.Column(db.String(30), nullable=False)
+  ipaddress = db.Column(db.String(200), nullable=False)
   location = db.Column(db.String(120), nullable=False)
   thumbnail = db.Column(db.String(200))
   online = db.Column(db.String(4))
