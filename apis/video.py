@@ -33,6 +33,18 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         return "success"
     # ============================================================================================
 
+    # desc: ADD NEW Video IN THE TABLE
+    # path: /video [POST]
+    @blueprint.route(f'/{resource_prefix}', methods=['POST'])
+    def create_video():
+        # ADD NEW VIDEO
+        body = request.get_json()
+        db.session.add(
+            Video(body['path'], body['time'], body['camera_id']))
+        db.session.commit()
+
+        return "Thumbnail created & Camera thumbnail updated"
+
     # desc: REQUEST FOR HLS PLAY
     # path: /play/<camera_id> [POST]
     @blueprint.route(f'/{resource_prefix}/play/<camera_id>/<start>/<end>', methods=['GET'])

@@ -2,45 +2,57 @@ from typing import Optional
 from io import BytesIO
 from gi.repository import Gst
 from utils import must_link
-import datetime;
+from datetime import datetime
+import requests
 
 first = 0
 flag = 0
 index = 0
-ct = datetime.datetime.now()
-def new_buffer(sink, data, location):
-    global first
-    global flag
-    global ct
-    global index
+ct = datetime.now()
 
-    sample = sink.emit("pull-sample")
-    buf = sample.get_buffer()
-    buffer = buf.extract_dup(0, buf.get_size())
-
-    if first == 0:
-        first = buf.pts 
-        ct = datetime.datetime.now()
-        flag = 1
-    
-    if(flag == 0):
-        ct = datetime.datetime.now()
-        index +=1
-        flag = 1
-    binary_file = open("../share/{}/videos/output{}.ts".format(location, index), "ab")
-    binary_file.write(buffer)
-    binary_file.close()
-    if((buf.pts - first) > 2000000000):
-        print("./videos/output{}.ts".format(index), "-", ct, buf.pts)
-        flag = 0
-        first = buf.pts
-    
-
-    return Gst.FlowReturn.OK
+REQUEST_URL = "http://localhost:5000/api/videos"
 
 class HLSAPPSINK:
-    def __new__(
-        cls,
+    def __init__(self):
+        self.first = 0
+        self.flag = 0
+        self.index = 0
+        self.ct = datetime.now()
+    
+    def new_buffer(self, sink, data, location):
+
+        sample = sink.emit("pull-sample")
+        buf = sample.get_buffer()
+        buffer = buf.extract_dup(0, buf.get_size())
+
+        if self.first == 0:
+            self.first = buf.pts 
+            self.ct = datetime.now()
+            self.flag = 1
+        
+        if(self.flag == 0):
+            self.ct = datetime.now()
+            self.index +=1
+            self.flag = 1
+        binary_file = open("../share/{}/videos/output{}.ts".format(location, self.index), "ab")
+        binary_file.write(buffer)
+        binary_file.close()
+        if((buf.pts - self.first) > 2000000000):
+            path = "./share/{}/videos/output{}.ts".format(location, self.index)
+            print("./videos/output{}.ts".format(self.index), "-", self.ct, buf.pts)
+            self.flag = 0
+            self.first = buf.pts
+        
+            r = requests.post(REQUEST_URL, json={
+                    "path" : path,
+                    "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
+                    "camera_id" : location
+                    })
+
+        return Gst.FlowReturn.OK
+
+    def genObj(
+        self,
         location: int
     ) -> Gst.Element:
 
@@ -48,13 +60,13 @@ class HLSAPPSINK:
 
         sink = Gst.ElementFactory.make("appsink")
         sink.set_property("emit-signals", True)
-        sink.connect("new-sample", new_buffer, sink, location)
+        sink.connect("new-sample", self.new_buffer, sink, location)
         # sink.set_property("location", location)
         # sink.set_property("target-duration", 5)
         # sink.set_property("playlist-location", playlist_location)
       
         bin = Gst.Bin()
-        bin.add(sink);
+        bin.add(sink)
 
         enc = Gst.ElementFactory.make("x264enc")
         enc.set_property("bitrate", 4000)

@@ -7,6 +7,7 @@ from converter import H264Decode
 from sink import HLSAPPSINK
 from jpegenc import JpegSink
 import threading
+from db import run_query
 
 Gst.init(None)
 GObject.threads_init()
@@ -27,12 +28,12 @@ def CCTV_VOD_THUMBNAIL(camera_id):
     decoder = H264Decode()
     pipeline.add(decoder)
 
-    recording_sink = HLSAPPSINK(
+    recording_sink = HLSAPPSINK().genObj(
         location=camera_id
     )
     pipeline.add(recording_sink)
 
-    jpeg_sink = JpegSink(
+    jpeg_sink = JpegSink().genObj(
         location=camera_id
     )
     pipeline.add(jpeg_sink)
@@ -80,9 +81,13 @@ def CCTV_VOD_THUMBNAIL(camera_id):
             if message == None:
                 pass
             elif message.type == Gst.MessageType.EOS:
+                query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id);
+                run_query(query)
                 print("END")
                 break
             elif message.type == Gst.MessageType.ERROR:
+                query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id);
+                run_query(query)
                 error, debug = message.parse_error()
                 print("ERROR")
                 print(error, debug)
