@@ -38,6 +38,7 @@ class JpegSink:
         if((buf.pts - self.first) > 2000000000):
             path = "{}/{}/thumbnails/output{}.jpeg".format(ROOT_PATH, location, self.index)
             binary_file = open("..{}/{}/thumbnails/output{}.jpeg".format(ROOT_PATH,location, self.index), "ab")
+            print(path)
             binary_file.write(buffer)
             binary_file.close()
 

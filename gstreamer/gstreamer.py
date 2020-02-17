@@ -7,7 +7,11 @@ from converter import H264Decode
 from sink import HLSAPPSINK
 from jpegenc import JpegSink
 import threading
-from db import run_query
+import requests
+from datetime import datetime
+
+from db import run_query, select_query
+import time
 
 Gst.init(None)
 GObject.threads_init()
@@ -77,12 +81,28 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url):
     while True:
         try:
             message = bus.timed_pop(Gst.SECOND)
-            print(message)
             if message == None:
                 pass
             elif message.type == Gst.MessageType.EOS:
                 query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id)
                 run_query(query)
+                while(True):
+                    r = requests.post("http://localhost:5000/api/thumbnails", json={
+                            "path" : "/gray/gray.jpg",
+                            "time" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            "camera_id" : camera_id
+                        })
+                    r = requests.post("http://localhost:5000/api/videos", json={
+                            "path" : "/gray/gray.ts",
+                            "time" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            "camera_id" : camera_id
+                        })
+                    print("/gray/gray.jpg")
+                    query = "SELECT * FROM camera WHERE id = {}".format(camera_id)
+                    list = select_query(query)
+                    if list[0][5] == "YES":
+                        break
+                    time.sleep(2)
                 print("END")
                 break
             elif message.type == Gst.MessageType.ERROR:
