@@ -1,6 +1,6 @@
 # LOAD STANDARD PACKAGE
 import os
-from flask import request, jsonify
+from flask import request, jsonify, template_rendered, send_from_directory
 from db import create_database
 # LOAD CUSTOMIZED PACKAGE
 from app import app, db
@@ -20,6 +20,15 @@ create_database(DB_NAME)
 @app.before_first_request
 def init():
     db.create_all()
+
+# TO SERVE IN PRODUCTION MOD
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 # REGISTER APIS FOR CAMERA
 app.register_blueprint(create_camera_blueprint(

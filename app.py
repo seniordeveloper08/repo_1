@@ -15,7 +15,7 @@ DB_NAME = os.getenv("DB_NAME")
 DATABASE_URL = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, DB_IP, DB_NAME)
 
 # CREATE APP OBJECT
-app = Flask(__name__, static_folder=ROOT_PATH)
+app = Flask(__name__, static_folder=".{}".format(ROOT_PATH))
 
 # SET DATABASE URI IN CONFIG
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL

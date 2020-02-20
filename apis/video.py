@@ -2,12 +2,14 @@
 import os
 from flask import Blueprint, jsonify, request
 import datetime
+from dotenv import load_dotenv
 
 # LOAD CUSTOMIZED PACKAGE
 from app import db, Video
 
 # Load ENV Values
-ROOT_PATH = "./share"
+load_dotenv()
+ROOT_PATH = os.getenv("ROOT_PATH")
 
 # RANDOM Path
 RANDOM_PATH = "./share/random/videos"
@@ -59,10 +61,10 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
             del item.__dict__['_sa_instance_state']
             output = output+"#EXTINF:2.000000,\n"+item.__dict__["path"]+"\n"
         output += "#EXT-X-ENDLIST"
-        path = ".{}/".format(ROOT_PATH)
+        path = ".{}/playlist.m3u8".format(ROOT_PATH)
         f = open(path, "w")
         f.write(output)
         f.close()
-        path = "{}/".format(ROOT_PATH)
+        path = ".{}/playlist.m3u8".format(ROOT_PATH)
         return jsonify(path)
     return blueprint

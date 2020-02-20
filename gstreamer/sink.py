@@ -38,7 +38,7 @@ class HLSAPPSINK:
         binary_file = open("..{}/{}/videos/output{}.ts".format(ROOT_PATH, location, self.index), "ab")
         binary_file.write(buffer)
         binary_file.close()
-        if((buf.pts - self.first) > 2000000000):
+        if((buf.pts - self.first) > 2500000000):
             path = "{}/{}/videos/output{}.ts".format(ROOT_PATH, location, self.index)
             print(path)
             self.flag = 0

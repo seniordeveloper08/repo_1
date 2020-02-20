@@ -79,6 +79,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url):
     pipeline.set_state(Gst.State.PLAYING)
 
     while True:
+        
         try:
             message = bus.timed_pop(Gst.SECOND)
             if message == None:
@@ -88,16 +89,16 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url):
                 run_query(query)
                 while(True):
                     r = requests.post("http://localhost:5000/api/thumbnails", json={
-                            "path" : "/gray/gray.jpg",
+                            "path" : "/share/gray.jpg",
                             "time" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             "camera_id" : camera_id
                         })
                     r = requests.post("http://localhost:5000/api/videos", json={
-                            "path" : "/gray/gray.ts",
+                            "path" : "/share/gray.ts",
                             "time" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             "camera_id" : camera_id
                         })
-                    print("/gray/gray.jpg")
+                    print("/share/gray.jpg")
                     query = "SELECT * FROM camera WHERE id = {}".format(camera_id)
                     list = select_query(query)
                     if list[0][5] == "YES":
