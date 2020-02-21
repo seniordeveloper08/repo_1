@@ -45,13 +45,15 @@ class Video(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   path = db.Column(db.String(80), nullable=False)
   time = db.Column(db.DateTime, nullable=False)
+  duration = db.Column(db.Float, nullable=False)
   camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'))
 
-  def __init__(self, path, time, camera_id):
+  def __init__(self, path, time, duration, camera_id):
     self.path = path
     self.time = time
+    self.duration = duration
     self.camera_id = camera_id
-
+    
 # DEFINE SCHEMA Table OF THUMBNAIL LIST
 class Thumbnail(db.Model):
   id = db.Column(db.Integer, primary_key=True)

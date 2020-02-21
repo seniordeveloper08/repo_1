@@ -42,7 +42,7 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         # ADD NEW VIDEO
         body = request.get_json()
         db.session.add(
-            Video(body['path'], body['time'], body['camera_id']))
+            Video(body['path'], body['time'],body['duration'], body['camera_id']))
         db.session.commit()
 
         return "Thumbnail created & Camera thumbnail updated"
@@ -54,17 +54,19 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         videos = []
         output = '''#EXTM3U
 #EXT-X-VERSION:3
-#EXT-X-TARGETDURATION:2
+#EXT-X-TARGETDURATION:3
 #EXT-X-MEDIA-SEQUENCE:0
 '''
-        for item in db.session.query(Video).filter(Video.camera_id == camera_id, Video.time >= start, Video.time <= end):
+        print("start:", start, "end:", end)
+        for item in db.session.query(Video).filter(Video.camera_id == camera_id, Video.time >= start, Video.time <= end).order_by(Video.id):
+            print(item)
             del item.__dict__['_sa_instance_state']
-            output = output+"#EXTINF:2.000000,\n"+item.__dict__["path"]+"\n"
+            output = output+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"
         output += "#EXT-X-ENDLIST"
         path = ".{}/playlist.m3u8".format(ROOT_PATH)
         f = open(path, "w")
         f.write(output)
         f.close()
-        path = ".{}/playlist.m3u8".format(ROOT_PATH)
+        path = "{}/playlist.m3u8".format(ROOT_PATH)
         return jsonify(path)
     return blueprint

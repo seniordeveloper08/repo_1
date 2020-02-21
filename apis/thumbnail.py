@@ -62,7 +62,7 @@ def create_thumbnail_blueprint(blueprint_name: str, resource_type: str, resource
     @blueprint.route(f'/{resource_prefix}/<camera_id>/<start>/<end>/<duration>', methods=['GET'])
     def search_thumbnail(camera_id, start, end, duration):
         thumbnails = []
-        for item in db.session.query(Thumbnail).filter(Thumbnail.camera_id == camera_id, Thumbnail.time >= start, Thumbnail.time <= end):
+        for item in db.session.query(Thumbnail).filter(Thumbnail.camera_id == camera_id, Thumbnail.time >= start, Thumbnail.time <= end).order_by(Thumbnail.id):
             del item.__dict__['_sa_instance_state']
             thumbnails.append(item.__dict__)
         return jsonify(thumbnails)

@@ -6,12 +6,17 @@ from datetime import datetime
 import requests
 from dotenv import load_dotenv
 import os
+import numpy as np
+from moviepy.editor import *
 
+
+from GetDuration import get_duration
 # LOAD ENV VALUES
 load_dotenv()
 
 ROOT_PATH = os.getenv("ROOT_PATH")
 REQUEST_URL = "http://localhost:5000/api/videos"
+
 
 class HLSAPPSINK:
     def __init__(self):
@@ -25,7 +30,6 @@ class HLSAPPSINK:
         sample = sink.emit("pull-sample")
         buf = sample.get_buffer()
         buffer = buf.extract_dup(0, buf.get_size())
-
         if self.first == 0:
             self.first = buf.pts 
             self.ct = datetime.now()
@@ -35,21 +39,23 @@ class HLSAPPSINK:
             self.ct = datetime.now()
             self.index +=1
             self.flag = 1
-        binary_file = open("..{}/{}/videos/output{}.ts".format(ROOT_PATH, location, self.index), "ab")
+        binary_file = open("..{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")
         binary_file.write(buffer)
-        binary_file.close()
-        if((buf.pts - self.first) > 2500000000):
-            path = "{}/{}/videos/output{}.ts".format(ROOT_PATH, location, self.index)
+        if((buf.pts - self.first) > 2000000000):
+            path = "{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S'))
             print(path)
             self.flag = 0
             self.first = buf.pts
-        
+            duration = get_duration("..{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S')))
+            print(duration)
             r = requests.post(REQUEST_URL, json={
                     "path" : path,
                     "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
-                    "camera_id" : location
+                    "camera_id" : location,
+                    "duration": duration
                     })
-
+        
+        binary_file.close()
         return Gst.FlowReturn.OK
 
     def genObj(
