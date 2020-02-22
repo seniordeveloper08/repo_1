@@ -54,14 +54,18 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         videos = []
         output = '''#EXTM3U
 #EXT-X-VERSION:3
-#EXT-X-TARGETDURATION:3
+#EXT-X-TARGETDURATION:2
 #EXT-X-MEDIA-SEQUENCE:0
+
 '''
         print("start:", start, "end:", end)
         for item in db.session.query(Video).filter(Video.camera_id == camera_id, Video.time >= start, Video.time <= end).order_by(Video.id):
             print(item)
             del item.__dict__['_sa_instance_state']
-            output = output+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"
+            if(item.__dict__["path"] == '/share/gray.ts'):
+                output = output+'#EXT-X-DISCONTINUITY\n'+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"+'#EXT-X-DISCONTINUITY\n'
+            else:
+                output = output+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"
         output += "#EXT-X-ENDLIST"
         path = ".{}/playlist.m3u8".format(ROOT_PATH)
         f = open(path, "w")

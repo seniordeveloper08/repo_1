@@ -31,6 +31,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
     first_thumbnail = start_thumbnail
     
     flag = 0
+    
     # TEST : "rtsp://83.229.5.36:1935/vod/sample.mp4"
     rtsp_uri = rtsp_url
     # Video elements.
@@ -131,8 +132,8 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                     print("OFFLINE STATUS")
                     time.sleep(2)
                     copy_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    dst = "..{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time)
-                    shutil.copyfile("../share/gray.ts", dst)
+                    # dst = "..{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time)
+                    # shutil.copyfile("../share/gray.ts", dst)
 
                     r = requests.post("http://localhost:5000/api/thumbnails", json={
                             "path" : "/share/gray.jpg",
@@ -140,7 +141,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                             "camera_id" : camera_id
                         })
                     r = requests.post("http://localhost:5000/api/videos", json={
-                            "path" : "{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time),
+                            "path" : "/share/gray.ts",
                             "time" : copy_time,
                             "camera_id" : camera_id,
                             "duration": get_duration("../share/gray.ts")
