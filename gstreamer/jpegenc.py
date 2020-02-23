@@ -19,7 +19,7 @@ class JpegSink:
         self.first = 0
         self.flag = 0
         self.index = 0
-        self.ct = datetime.now()
+        self.ct = datetime.utcnow()
         
     def new_buffer(self, sink, data, location):
         sample = sink.emit("pull-sample")
@@ -28,11 +28,11 @@ class JpegSink:
 
         if self.first == 0:
             self.first = buf.pts 
-            self.ct = datetime.now()
+            self.ct = datetime.utcnow()
             self.flag = 1
         
         if(self.flag == 0):
-            self.ct = datetime.now()
+            self.ct = datetime.utcnow()
             self.index +=1
             self.flag = 1
         if((buf.pts - self.first) > 2000000000):

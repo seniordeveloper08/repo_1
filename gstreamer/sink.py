@@ -23,7 +23,7 @@ class HLSAPPSINK:
         self.first = 0
         self.flag = 0
         self.index = 0
-        self.ct = datetime.now()
+        self.ct = datetime.utcnow()
     
     def new_buffer(self, sink, data, location):
 
@@ -32,11 +32,11 @@ class HLSAPPSINK:
         buffer = buf.extract_dup(0, buf.get_size())
         if self.first == 0:
             self.first = buf.pts 
-            self.ct = datetime.now()
+            self.ct = datetime.utcnow()
             self.flag = 1
         
         if(self.flag == 0):
-            self.ct = datetime.now()
+            self.ct = datetime.utcnow()
             self.index +=1
             self.flag = 1
         binary_file = open("..{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")

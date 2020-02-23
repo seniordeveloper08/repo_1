@@ -3,6 +3,7 @@ import os
 from flask import Blueprint, jsonify, request
 import datetime
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 
 # LOAD CUSTOMIZED PACKAGE
 from app import db, Camera, Thumbnail
@@ -62,7 +63,10 @@ def create_thumbnail_blueprint(blueprint_name: str, resource_type: str, resource
     @blueprint.route(f'/{resource_prefix}/<camera_id>/<start>/<end>/<duration>', methods=['GET'])
     def search_thumbnail(camera_id, start, end, duration):
         thumbnails = []
-        for item in db.session.query(Thumbnail).filter(Thumbnail.camera_id == camera_id, Thumbnail.time >= start, Thumbnail.time <= end).order_by(Thumbnail.id):
+        start1 = datetime.astimezone(datetime.strptime(start, '%Y-%m-%dT%H:%M'),timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+        end1 = datetime.astimezone(datetime.strptime(end, '%Y-%m-%dT%H:%M'),timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+        print("HHH", start1, end1)
+        for item in db.session.query(Thumbnail).filter(Thumbnail.camera_id == camera_id, Thumbnail.time >= start1, Thumbnail.time <= end1).order_by(Thumbnail.id):
             del item.__dict__['_sa_instance_state']
             thumbnails.append(item.__dict__)
         return jsonify(thumbnails)

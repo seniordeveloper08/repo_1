@@ -93,7 +93,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
         try:
             message = bus.timed_pop(Gst.SECOND)
             
-            second_date = datetime.now()
+            second_date = datetime.utcnow()
             delta_video = second_date - first_video
             delta_thumbnail = second_date - first_thumbnail
 
@@ -131,7 +131,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                 while(True):
                     print("OFFLINE STATUS")
                     time.sleep(2)
-                    copy_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    copy_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
                     # dst = "..{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time)
                     # shutil.copyfile("../share/gray.ts", dst)
 
@@ -152,36 +152,6 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                         print("CHANGED")
                         break
                 break
-
-            # elif message.type == Gst.MessageType.ERROR:
-            #     if (flag == 0):
-            #         query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id)
-            #         run_query(query)
-            #         flag = 1
-            #     while(True):
-            #         print("ERROR")
-            #         time.sleep(2)
-            #         copy_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            #         dst = "..{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time)
-            #         shutil.copyfile("../share/gray.ts", dst)
-
-            #         r = requests.post("http://localhost:5000/api/thumbnails", json={
-            #                 "path" : "/share/gray.jpg",
-            #                 "time" : copy_time,
-            #                 "camera_id" : camera_id
-            #             })
-            #         r = requests.post("http://localhost:5000/api/videos", json={
-            #                 "path" : "{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time),
-            #                 "time" : copy_time,
-            #                 "camera_id" : camera_id,
-            #                 "duration": 2.0
-            #             })
-            #         query = "SELECT * FROM camera WHERE id = {}".format(camera_id)
-            #         list = select_query(query)
-            #         if list[0][5] == "YES":
-            #             print("CHANGED")
-            #             break
-            #     break
         except KeyboardInterrupt:
             break
 

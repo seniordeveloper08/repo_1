@@ -20,8 +20,8 @@ while(True):
 
             time.sleep(2)
 
-            start_video = datetime.now()
-            start_thumbnail = datetime.now()
+            start_video = datetime.utcnow()
+            start_thumbnail = datetime.utcnow()
             
             result1 = select_query("SELECT * FROM video WHERE camera_id={};".format(item[0]))
             result2 = select_query("SELECT * FROM thumbnail WHERE camera_id={};".format(item[0]))
