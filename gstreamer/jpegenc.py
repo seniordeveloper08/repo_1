@@ -29,13 +29,6 @@ class JpegSink:
         if self.first == 0:
             self.first = buf.pts 
             self.ct = datetime.utcnow()
-            self.flag = 1
-        
-        if(self.flag == 0):
-            self.ct = datetime.utcnow()
-            self.index +=1
-            self.flag = 1
-        if((buf.pts - self.first) > 2000000000):
             path = "{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S'))
             binary_file = open("..{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH,location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")
             print(path)
@@ -47,7 +40,25 @@ class JpegSink:
                 "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
                 "camera_id" : location
                 })
+            self.flag = 1
+        
+        if(self.flag == 0):
+            self.ct = datetime.utcnow()
+            path = "{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S'))
+            binary_file = open("..{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH,location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")
+            print(path)
+            binary_file.write(buffer)
+            binary_file.close()
 
+            r = requests.post(REQUEST_URL, json={
+                "path" : path,
+                "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
+                "camera_id" : location
+                })
+            self.index +=1
+            self.flag = 1
+
+        if((buf.pts - self.first) > 2000000000):
             self.flag = 0
             self.first = buf.pts
         

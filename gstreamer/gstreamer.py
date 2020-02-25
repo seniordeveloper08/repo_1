@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 ROOT_PATH = os.getenv("ROOT_PATH")
+LIMIT = os.getenv("LIMIT")
 
 Gst.init(None)
 GObject.threads_init()
@@ -97,8 +98,8 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
             delta_video = second_date - first_video
             delta_thumbnail = second_date - first_thumbnail
 
-            if(delta_video.total_seconds() >= 3600):
-                last_date = first_video + timedelta(seconds=600)
+            if(delta_video.total_seconds() >= int(LIMIT) * 24 * 60 * 3600):
+                last_date = first_video + timedelta(seconds=3600)
                 query = "SELECT * FROM VIDEO WHERE camera_id = {} AND time >= {} AND time <= {}".format(camera_id, datetime.strftime(first_video, "'%Y-%m-%d %H:%M:%S'"),datetime.strftime(last_date, "'%Y-%m-%d %H:%M:%S'"))
                 result = select_query(query)
                 for item in result:
@@ -109,8 +110,8 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                 run_query(query)
                 first_video = last_date
     
-            if(delta_thumbnail.total_seconds() >= 3600):
-                last_date = first_thumbnail + timedelta(seconds=600)
+            if(delta_thumbnail.total_seconds() >= int(LIMIT) * 24 * 60 * 3600):
+                last_date = first_thumbnail + timedelta(seconds=3600)
                 query = "SELECT * FROM THUMBNAIL WHERE camera_id = {} AND time >= {} AND time <= {}".format(camera_id, datetime.strftime(first_thumbnail, "'%Y-%m-%d %H:%M:%S'"),datetime.strftime(last_date, "'%Y-%m-%d %H:%M:%S'"))
                 result = select_query(query)
                 for item in result:

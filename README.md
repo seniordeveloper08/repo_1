@@ -9,8 +9,10 @@
 
 > Python Version : 3.9.0
 
-## Install Python Packages
-> python -m pip install requirements
+## Setup all programs & python packages
+> 
+- Open terminal `Ctrl + Alt +t`
+- Run Command `sudo ./env.sh`
 
 ## ENV file
 > Set Configuration with .env file
@@ -18,11 +20,17 @@
 # Database URL
 DATABASE_URI = "postgresql://postgres:iwantbefree@localhost/db_products"
 
+DB_USER = "postgres"
+DB_PASSWORD = "postgres"
+DB_IP = "localhost"
+DB_NAME = "db_products"
+DB_PORT = "5432"
+
 # ROOT PATH FOR VIDEO & THUMBNAILs
-ROOT_PATH = "./thumbnail"
+ROOT_PATH = "/share"
 
 # DIR PATH FOR STOR OF RANDOM IMAGES
-RAMDOM_IMAGES = "./thumbnail/random"
+RAMDOM_IMAGES = "/share/random"
 ```
 ## Run Server
 > python main.py
