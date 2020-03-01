@@ -6,14 +6,18 @@ conn = psycopg2.connect(
 
 conn.autocommit = True
 
-cur = conn.cursor()
+# cur = conn.cursor()
 
 # cur.execute("DELETE FROM camera;")
 
 def run_query(sql):
+    cur = conn.cursor()
     cur.execute(sql)
+    cur.close()
 
 def select_query(sql):
+    cur = conn.cursor()
     cur.execute(sql)
     result = cur.fetchall()
+    cur.close()
     return result
