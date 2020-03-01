@@ -46,13 +46,13 @@ class HLSAPPSINK:
             print(path)
             self.flag = 0
             self.first = buf.pts
-            duration = get_duration("..{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S')))
-            print(duration)
+            # duration = get_duration("..{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S')))
+            # print(duration)
             r = requests.post(REQUEST_URL, json={
                     "path" : path,
                     "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
                     "camera_id" : location,
-                    "duration": duration
+                    "duration": 2.0
                     })
         
         binary_file.close()

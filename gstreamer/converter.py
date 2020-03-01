@@ -11,13 +11,17 @@ class H264Decode:
         videoconvert = Gst.ElementFactory.make("videoconvert", "videoconvert")
         bin.add(videoconvert)
 
+        clockoverlay = Gst.ElementFactory.make("clockoverlay", "clockoverlay")
+        bin.add(clockoverlay)
+
         decodebin.connect("pad-added", pad_added, videoconvert)
+        videoconvert.link(clockoverlay)
 
         sink_pad = decodebin.get_static_pad('sink')
         sink_ghost = Gst.GhostPad.new('sink', sink_pad)
         bin.add_pad(sink_ghost)
 
-        src_pad = videoconvert.get_static_pad('src')
+        src_pad = clockoverlay.get_static_pad('src')
         src_ghost = Gst.GhostPad.new('src', src_pad)
         bin.add_pad(src_ghost)
 

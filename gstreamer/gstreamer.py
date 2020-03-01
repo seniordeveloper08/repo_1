@@ -131,8 +131,8 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                     flag = 1
                 while(True):
                     print("OFFLINE STATUS")
-                    time.sleep(2)
                     copy_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                    time.sleep(2)
                     # dst = "..{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time)
                     # shutil.copyfile("../share/gray.ts", dst)
 

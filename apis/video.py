@@ -48,7 +48,7 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         return "Thumbnail created & Camera thumbnail updated"
 
     # desc: REQUEST FOR HLS PLAY
-    # path: /play/<camera_id> [POST]
+    # path: /play/<camera_id> [GET]
     @blueprint.route(f'/{resource_prefix}/play/<camera_id>/<start>/<end>', methods=['GET'])
     def play_hls(camera_id, start, end):
         videos = []

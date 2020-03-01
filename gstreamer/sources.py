@@ -21,7 +21,7 @@ class RTSPH264Source:
         rtspsrc = Gst.ElementFactory.make("rtspsrc", "rtspsrc")
         rtspsrc.set_property("location", location)
         rtspsrc.set_property("protocols", "tcp")
-        rtspsrc.set_property("retry", 100);
+        rtspsrc.set_property("retry", 100)
         rtspsrc.set_property("latency", 1000)
         rtspsrc.set_property("buffer-mode", 'auto')
         bin.add(rtspsrc)
