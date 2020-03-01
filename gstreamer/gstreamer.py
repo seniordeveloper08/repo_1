@@ -150,7 +150,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                     query = "SELECT * FROM camera WHERE id = {}".format(camera_id)
                     list = select_query(query)
                     if list[0][5] == "YES":
-                        print("CHANGED")
+                        print("{} CHANGED".format(list[0][5]))
                         break
                 break
         except KeyboardInterrupt:

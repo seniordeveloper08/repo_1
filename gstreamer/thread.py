@@ -15,7 +15,7 @@ def thread_camera(id, url):
             query = "UPDATE camera SET online = 'YES' where id = {}".format(id)
             run_query(query)
 
-            time.sleep(2)
+            time.sleep(2.1)
 
             start_video = datetime.utcnow()
             start_thumbnail = datetime.utcnow()
