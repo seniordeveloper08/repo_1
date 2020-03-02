@@ -82,7 +82,7 @@ class JpegSink:
         bin.add(enc)
 
         capsfilter = Gst.ElementFactory.make("capsfilter", "filter1")
-        caps = Gst.caps_from_string("video/x-raw, width=200,height=100")
+        caps = Gst.caps_from_string("video/x-raw, width=800,height=400")
         capsfilter.set_property("caps", caps)
 
         scale = Gst.ElementFactory.make("videoscale", "scale")
