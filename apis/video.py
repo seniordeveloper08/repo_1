@@ -42,7 +42,7 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         # ADD NEW VIDEO
         body = request.get_json()
         db.session.add(
-            Video(body['path'], body['time'],body['duration'], body['camera_id']))
+            Video(body['path'], body['time'], body['time2str'],body['duration'], body['camera_id']))
         db.session.commit()
 
         return "Thumbnail created & Camera thumbnail updated"

@@ -50,7 +50,7 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
         # ADD NEW CAMERA
         body = request.get_json()
         db.session.add(
-            Camera(body['name'], body['ipaddress'], body['location'], body["thumbnail"], body["online"]))
+            Camera(body['name'], body['ipaddress'], body['location'], body["thumbnail"], body["online"], body['timezone']))
         db.session.commit()
 
         camera = {}

@@ -18,6 +18,6 @@ while(True):
             run_query(query)
 
             thread_list.append(item[0])
-            threading.Thread(target=thread_camera, args=(item[0], item[2])).start()
+            threading.Thread(target=thread_camera, args=(item[0], item[2], item[6])).start()
     print(thread_list)
     time.sleep(60)

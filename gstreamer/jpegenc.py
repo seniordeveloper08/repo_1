@@ -6,6 +6,7 @@ from datetime import datetime;
 import requests
 from dotenv import load_dotenv
 import os
+from pytz import timezone
 
 # LOAD ENV VALUES
 load_dotenv()
@@ -19,16 +20,17 @@ class JpegSink:
         self.first = 0
         self.flag = 0
         self.index = 0
-        self.ct = datetime.utcnow()
+        self.ct = datetime.now()
         
-    def new_buffer(self, sink, data, location):
+    def new_buffer(self, sink, data, location, zone):
         sample = sink.emit("pull-sample")
         buf = sample.get_buffer()
         buffer = buf.extract_dup(0, buf.get_size())
 
         if self.first == 0:
             self.first = buf.pts 
-            self.ct = datetime.utcnow()
+            self.ct = datetime.now(timezone(zone))
+            print(self.ct)
             path = "{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S'))
             binary_file = open("..{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH,location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")
             print(path)
@@ -38,12 +40,13 @@ class JpegSink:
             r = requests.post(REQUEST_URL, json={
                 "path" : path,
                 "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
+                "time2str" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
                 "camera_id" : location
                 })
             self.flag = 1
         
         if(self.flag == 0):
-            self.ct = datetime.utcnow()
+            self.ct = datetime.now(timezone(zone))
             path = "{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S'))
             binary_file = open("..{}/{}/thumbnails/{}.jpeg".format(ROOT_PATH,location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")
             print(path)
@@ -53,6 +56,7 @@ class JpegSink:
             r = requests.post(REQUEST_URL, json={
                 "path" : path,
                 "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
+                "time2str" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
                 "camera_id" : location
                 })
             self.index +=1
@@ -67,13 +71,14 @@ class JpegSink:
     def genObj(
         self,
         location: int,
+        zone: str
     ) -> Gst.Element:
 
         print('sink')
 
         sink = Gst.ElementFactory.make("appsink")
         sink.set_property("emit-signals", True)
-        sink.connect("new-sample", self.new_buffer, sink, location)
+        sink.connect("new-sample", self.new_buffer, sink, location, zone)
       
         bin = Gst.Bin()
         bin.add(sink)

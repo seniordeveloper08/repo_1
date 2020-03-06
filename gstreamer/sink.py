@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import os
 import numpy as np
 from moviepy.editor import *
-
+from pytz import timezone
 
 from GetDuration import get_duration
 # LOAD ENV VALUES
@@ -23,20 +23,20 @@ class HLSAPPSINK:
         self.first = 0
         self.flag = 0
         self.index = 0
-        self.ct = datetime.utcnow()
+        self.ct = datetime.now()
     
-    def new_buffer(self, sink, data, location):
+    def new_buffer(self, sink, data, location, zone):
 
         sample = sink.emit("pull-sample")
         buf = sample.get_buffer()
         buffer = buf.extract_dup(0, buf.get_size())
         if self.first == 0:
             self.first = buf.pts 
-            self.ct = datetime.utcnow()
+            self.ct = datetime.now(timezone(zone))
             self.flag = 1
         
         if(self.flag == 0):
-            self.ct = datetime.utcnow()
+            self.ct = datetime.now(timezone(zone))
             self.index +=1
             self.flag = 1
         binary_file = open("..{}/{}/videos/{}.ts".format(ROOT_PATH, location, self.ct.strftime('%Y-%m-%d %H:%M:%S')), "ab")
@@ -51,6 +51,7 @@ class HLSAPPSINK:
             r = requests.post(REQUEST_URL, json={
                     "path" : path,
                     "time" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
+                    "time2str" : self.ct.strftime('%Y-%m-%d %H:%M:%S'),
                     "camera_id" : location,
                     "duration": 2.0
                     })
@@ -60,14 +61,15 @@ class HLSAPPSINK:
 
     def genObj(
         self,
-        location: int
+        location: int,
+        zone: str
     ) -> Gst.Element:
 
         print('sink')
 
         sink = Gst.ElementFactory.make("appsink")
         sink.set_property("emit-signals", True)
-        sink.connect("new-sample", self.new_buffer, sink, location)
+        sink.connect("new-sample", self.new_buffer, sink, location, zone)
         # sink.set_property("location", location)
         # sink.set_property("target-duration", 5)
         # sink.set_property("playlist-location", playlist_location)

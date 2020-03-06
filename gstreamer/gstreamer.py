@@ -11,6 +11,7 @@ import requests
 from datetime import datetime, timedelta
 import shutil
 from GetDuration import get_duration
+from pytz import timezone
 
 from db import run_query, select_query
 import time
@@ -23,7 +24,7 @@ LIMIT = os.getenv("LIMIT")
 Gst.init(None)
 GObject.threads_init()
 
-def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
+def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail, zone):
 
     pipeline = Gst.Pipeline()
     bus = pipeline.get_bus()
@@ -45,12 +46,14 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
     pipeline.add(decoder)
 
     recording_sink = HLSAPPSINK().genObj(
-        location=camera_id
+        location = camera_id,
+        zone= zone
     )
     pipeline.add(recording_sink)
 
     jpeg_sink = JpegSink().genObj(
-        location=camera_id
+        location=camera_id,
+        zone= zone
     )
     pipeline.add(jpeg_sink)
 
@@ -75,9 +78,6 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
 
     try:
         must_link(src.link(decoder))
-        # must_link(decoder.link(recording_sink))
-        # must_link(decoder.link(osd_sink))
-
         must_link(decoder.link(videotee))
         must_link(teepad_recording.link(recording_pad))
         must_link(recording_queue.link(recording_sink))
@@ -94,7 +94,8 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
         try:
             message = bus.timed_pop(Gst.SECOND)
             
-            second_date = datetime.utcnow()
+            second_date = datetime.strptime(datetime.now(timezone(zone)).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
+            # print("------------", second_date, first_video)
             delta_video = second_date - first_video
             delta_thumbnail = second_date - first_thumbnail
 
@@ -131,7 +132,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                     flag = 1
                 while(True):
                     print("OFFLINE STATUS")
-                    copy_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                    copy_time = datetime.now(timezone(zone)).strftime('%Y-%m-%d %H:%M:%S')
                     time.sleep(2)
                     # dst = "..{}/{}/videos/{}.ts".format(ROOT_PATH, camera_id, copy_time)
                     # shutil.copyfile("../share/gray.ts", dst)
@@ -139,11 +140,13 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail):
                     r = requests.post("http://localhost:5000/api/thumbnails", json={
                             "path" : "/share/gray.jpg",
                             "time" : copy_time,
+                            "time2str" : copy_time,
                             "camera_id" : camera_id
                         })
                     r = requests.post("http://localhost:5000/api/videos", json={
                             "path" : "/share/gray.ts",
                             "time" : copy_time,
+                            "time2str" : copy_time,
                             "camera_id" : camera_id,
                             "duration": get_duration("../share/gray.ts")
                         })

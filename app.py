@@ -30,27 +30,31 @@ class Camera(db.Model):
   location = db.Column(db.String(120), nullable=False)
   thumbnail = db.Column(db.String(200))
   online = db.Column(db.String(4))
+  timezone = db.Column(db.String(40), nullable=False)
   thumbnails = db.relationship("Thumbnail", backref=backref("camera", lazy=True))
   videos = db.relationship("Video", backref=backref("camera", lazy=True))
 
-  def __init__(self, name, ipaddress, location, thumbnail, online):
+  def __init__(self, name, ipaddress, location, thumbnail, online, timezone):
     self.name = name
     self.ipaddress = ipaddress
     self.location = location
     self.thumbnail = thumbnail
     self.online = online
+    self.timezone = timezone
 
 # DEFINE SHCEMA TABLE OF VIDEO LIST
 class Video(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   path = db.Column(db.String(80), nullable=False)
   time = db.Column(db.DateTime, nullable=False)
+  time2str = db.Column(db.String(20), nullable=False)
   duration = db.Column(db.Float, nullable=False)
   camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'))
 
-  def __init__(self, path, time, duration, camera_id):
+  def __init__(self, path, time,time2str, duration, camera_id):
     self.path = path
     self.time = time
+    self.time2str = time2str
     self.duration = duration
     self.camera_id = camera_id
     
@@ -59,10 +63,12 @@ class Thumbnail(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   path = db.Column(db.String(80), nullable=False)
   time = db.Column(db.DateTime, nullable=False)
+  time2str = db.Column(db.String(20), nullable=False)
   camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'))
 
-  def __init__(self, path, time, camera_id):
+  def __init__(self, path, time, time2str, camera_id):
     self.path = path
     self.time = time
+    self.time2str = time2str
     self.camera_id = camera_id
 
