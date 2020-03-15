@@ -6,6 +6,8 @@ from utils import must_link
 from converter import H264Decode
 from sink import HLSAPPSINK
 from jpegenc import JpegSink
+from livesink import HLSLiveSink
+
 import threading
 import requests
 from datetime import datetime, timedelta
@@ -57,10 +59,18 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail, zone):
     )
     pipeline.add(jpeg_sink)
 
+    live_sink = HLSLiveSink(
+        location="../share/{}/lssink.%05d.ts".format(camera_id),
+        playlist_location="../share/{}/playlist.m3u8".format(camera_id),
+    )
+
+    pipeline.add(live_sink)
 
     videotee = Gst.ElementFactory.make("tee", "tee")
     pipeline.add(videotee)
 
+
+    # 1
     recording_queue = Gst.ElementFactory.make("queue", "recordqueue")
     pipeline.add(recording_queue)
 
@@ -68,7 +78,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail, zone):
     teepad_recording = videotee.get_request_pad('src_%u')
     recording_pad = recording_queue.get_static_pad('sink')
 
-
+    # 2
     jpeg_queue = Gst.ElementFactory.make("queue", "jpeg_queue")
     pipeline.add(jpeg_queue)
 
@@ -76,13 +86,26 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail, zone):
     teepad_osd =  videotee.get_request_pad('src_%u')
     jpeg_pad = jpeg_queue.get_static_pad('sink')
 
+    # 3
+    live_queue = Gst.ElementFactory.make("queue", "live_queue")
+    pipeline.add(live_queue)
+
+
+    teepad_live =  videotee.get_request_pad('src_%u')
+    live_pad = live_queue.get_static_pad('sink')
+
     try:
         must_link(src.link(decoder))
         must_link(decoder.link(videotee))
+
         must_link(teepad_recording.link(recording_pad))
         must_link(recording_queue.link(recording_sink))
+
         must_link(teepad_osd.link(jpeg_pad))
         must_link(jpeg_queue.link(jpeg_sink))
+
+        must_link(teepad_live.link(live_pad))
+        must_link(live_queue.link(live_sink))
     except RuntimeError as err:
         raise RuntimeError('Could not link source') from err
 
