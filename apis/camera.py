@@ -25,6 +25,16 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
             cameras.append(item.__dict__)
         return jsonify(cameras)
 
+    # desc: GET CAMERA'S STATE
+    # path: /cameras/online/<id> [GET]
+    @blueprint.route(f'/{resource_prefix}/online/<id>', methods=['GET'])
+    def live_status(id):
+
+        item = db.session.query(Camera).filter_by(id = id)[0]
+        del item.__dict__['_sa_instance_state']
+
+        return jsonify(item.__dict__["online"])
+
     # desc: USE CAMERA IN LIVE MOD
     # path: /cameras/<id> [GET]
     @blueprint.route(f'/{resource_prefix}/<id>', methods=['GET'])
