@@ -4,8 +4,8 @@ from flask import Blueprint, jsonify, request
 from dotenv import load_dotenv
 
 # LOAD CUSTOMIZED PACKAGE
-from app import db, Camera
-from sqlalchemy import or_
+from app import db, Camera, Thumbnail
+from sqlalchemy import or_, desc, not_
 
 # Load ENV Values
 load_dotenv()
@@ -32,8 +32,11 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
 
         item = db.session.query(Camera).filter_by(id = id)[0]
         del item.__dict__['_sa_instance_state']
-
-        return jsonify(item.__dict__)
+        
+        # item1 = db.session.query(Thumbnail).filter_by(camera_id = id).order_by(desc(Thumbnail.time))[0]
+        item1 = db.session.query(Thumbnail).filter(not_(Thumbnail.path.contains("gray"))).filter_by(camera_id = id).order_by(desc(Thumbnail.time))[0]
+        del item1.__dict__['_sa_instance_state']
+        return jsonify(item.__dict__, item1.__dict__)
 
     # desc: USE CAMERA IN LIVE MOD
     # path: /cameras/<id> [GET]
