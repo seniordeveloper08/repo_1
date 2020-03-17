@@ -45,7 +45,6 @@ class RTSPH264Source:
         src_pad = h264parse.get_static_pad('src')
         ghost_src = Gst.GhostPad.new('src', src_pad)
         bin.add_pad(ghost_src)
-        print(bin)
         return bin
 
 

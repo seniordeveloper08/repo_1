@@ -106,6 +106,7 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail, zone):
 
         must_link(teepad_live.link(live_pad))
         must_link(live_queue.link(live_sink))
+
     except RuntimeError as err:
         raise RuntimeError('Could not link source') from err
 
@@ -150,8 +151,12 @@ def CCTV_VOD_THUMBNAIL(camera_id, rtsp_url, start_video, start_thumbnail, zone):
                 pass
             elif message.type == Gst.MessageType.EOS or message.type == Gst.MessageType.ERROR:
                 if (flag == 0):
-                    query = "UPDATE camera SET online = 'NO' where id = {}".format(camera_id)
+                    query = "UPDATE camera SET online = 'NO', flag = 'NO' where id = {}".format(camera_id)
                     run_query(query)
+
+                    if os.path.exists("../share/{}/playlist.m3u8".format(camera_id)):
+                        os.remove("../share/{}/playlist.m3u8".format(camera_id))
+                    
                     flag = 1
                 while(True):
                     print("OFFLINE STATUS")

@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 from dotenv import load_dotenv
+
 import os
 
 # LOAD ENV VALUES
@@ -31,16 +32,20 @@ class Camera(db.Model):
   thumbnail = db.Column(db.String(200))
   online = db.Column(db.String(4))
   timezone = db.Column(db.String(40), nullable=False)
+  flag = db.Column(db.String(4))
+
   thumbnails = db.relationship("Thumbnail", backref=backref("camera", lazy=True))
   videos = db.relationship("Video", backref=backref("camera", lazy=True))
 
-  def __init__(self, name, ipaddress, location, thumbnail, online, timezone):
+
+  def __init__(self, name, ipaddress, location, thumbnail, online, timezone, flag):
     self.name = name
     self.ipaddress = ipaddress
     self.location = location
     self.thumbnail = thumbnail
     self.online = online
     self.timezone = timezone
+    self.flag = flag
 
 # DEFINE SHCEMA TABLE OF VIDEO LIST
 class Video(db.Model):

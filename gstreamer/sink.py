@@ -9,6 +9,7 @@ import os
 import numpy as np
 from moviepy.editor import *
 from pytz import timezone
+from db import run_query, select_query
 
 from GetDuration import get_duration
 # LOAD ENV VALUES
@@ -26,7 +27,8 @@ class HLSAPPSINK:
         self.ct = datetime.now()
     
     def new_buffer(self, sink, data, location, zone):
-
+        query = "UPDATE camera SET flag = 'YES' where id = {}".format(location)
+        run_query(query)
         sample = sink.emit("pull-sample")
         buf = sample.get_buffer()
         buffer = buf.extract_dup(0, buf.get_size())
@@ -83,7 +85,6 @@ class HLSAPPSINK:
         enc.set_property("key-int-max", 60)
         enc.set_property("speed-preset", "ultrafast")
         bin.add(enc)
-
         mpegtsmux = Gst.ElementFactory.make("mpegtsmux", "mpegtsmux")
         if not mpegtsmux:
             sys.stderr.write(" Unable to create mpegtsmux \n")
