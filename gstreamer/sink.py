@@ -25,10 +25,12 @@ class HLSAPPSINK:
         self.flag = 0
         self.index = 0
         self.ct = datetime.now()
-    
+        self.key = 0
     def new_buffer(self, sink, data, location, zone):
-        query = "UPDATE camera SET flag = 'YES' where id = {}".format(location)
-        run_query(query)
+        if self.key == 0:
+            query = "UPDATE camera SET flag = 'YES' where id = {}".format(location)
+            run_query(query)
+            self.key = 1
         sample = sink.emit("pull-sample")
         buf = sample.get_buffer()
         buffer = buf.extract_dup(0, buf.get_size())
