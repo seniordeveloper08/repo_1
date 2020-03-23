@@ -37,6 +37,32 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
         item1 = db.session.query(Thumbnail).filter(not_(Thumbnail.path.contains("gray"))).filter_by(camera_id = id).order_by(desc(Thumbnail.time))[0]
         del item1.__dict__['_sa_instance_state']
         return jsonify(item.__dict__, item1.__dict__)
+    
+    # desc: UPDATE CAMERA'S INFO
+    # path: /cameras/<id> [PUT]
+    @blueprint.route(f'/{resource_prefix}/<id>', methods=['PUT'])
+    def update_camera(id):
+        # ADD NEW CAMERA
+        body = request.get_json()
+        for item in db.session.query(Camera).filter_by(id = id):
+            # Camera(body['name'], body['ipaddress'], body['location'], body["thumbnail"], body["online"], body['timezone'], "YES"))
+            item.name = body['name']
+            item.ipaddress = body['ipaddress']
+            item.location = body['location']
+            item.timezone = body['timezone']
+        db.session.commit()
+
+        return jsonify({"msg" : "Success"})
+
+    # desc: DELETE CAMERA'S INFO
+    # path: /cameras/<id> [DELETE]
+    @blueprint.route(f'/{resource_prefix}/<id>', methods=['DELETE'])
+    def delete_camera(id):
+        # ADD NEW CAMERA
+        db.session.query(Camera).filter_by(id = id).delete()
+        db.session.commit()
+
+        return jsonify({"msg" : "Success"})
 
     # desc: USE CAMERA IN LIVE MOD
     # path: /cameras/<id> [GET]
