@@ -12,7 +12,7 @@ class HLSLiveSink:
 
         sink = Gst.ElementFactory.make("hlssink")
         sink.set_property("location", location)
-        sink.set_property("target-duration", 2)
+        sink.set_property("target-duration", 1)
         sink.set_property("max-files", 5)
         sink.set_property("playlist-location", playlist_location)
       

@@ -67,10 +67,18 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
             else:
                 output = output+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"
         output += "#EXT-X-ENDLIST"
-        path = ".{}/playlist.m3u8".format(ROOT_PATH)
-        f = open(path, "w")
+        path0 = ".{}/m3u8/{}{}.m3u8"
+        path1="{}/m3u8/{}{}.m3u8"
+        i=0
+        while(True):
+            if os.path.exists(path0.format(ROOT_PATH, datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), i)):
+                i+=1
+            else:   
+               path0 =  path0.format(ROOT_PATH, datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), i)
+               path1 =  path1.format(ROOT_PATH, datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), i)
+               break
+        f = open(path0, "w")
         f.write(output)
         f.close()
-        path = "{}/playlist.m3u8".format(ROOT_PATH)
-        return jsonify(path)
+        return jsonify(path1)
     return blueprint
