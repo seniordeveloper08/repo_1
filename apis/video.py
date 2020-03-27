@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 import datetime
 from dotenv import load_dotenv
 from apis.utils import remove_less_1000
+from apis.m3u8convert import convert_m3u8_files
 
 import shutil
 # LOAD CUSTOMIZED PACKAGE
@@ -49,6 +50,14 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
 
         return "Thumbnail created & Camera thumbnail updated"
 
+    #desc: M3U8 CONVERT TO MP4 FILE
+    #path: /convert/<path> [GET]
+    @blueprint.route(f'/{resource_prefix}/convert/<path>', methods=['GET'])
+    def convert_mp4(path):
+        convert_m3u8_files('./share/m3u8/download{}'.format(path))
+
+        return jsonify('/share/m3u8/download{}'.format(path.replace("m3u8", "mp4")))
+
     # desc: REQUEST FOR HLS PLAY
     # path: /play/<camera_id> [GET]
     @blueprint.route(f'/{resource_prefix}/play/<camera_id>/<start>/<end>/<mode>/<video>', methods=['GET'])
@@ -76,16 +85,24 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         output += "#EXT-X-ENDLIST"
         path0 = ".{}/m3u8/{}{}.m3u8"
         path1="{}/m3u8/{}{}.m3u8"
+        path2=".{}/m3u8/download{}{}.m3u8"
+        output1 = output.replace("/share", "..")
         i=0
         while(True):
-            if os.path.exists(path0.format(ROOT_PATH, datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), i)):
+            date = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")
+            if os.path.exists(path0.format(ROOT_PATH, date, i)):
                 i+=1
             else:   
-               path0 =  path0.format(ROOT_PATH, datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), i)
-               path1 =  path1.format(ROOT_PATH, datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), i)
+               path0 =  path0.format(ROOT_PATH, date, i)
+               path1 =  path1.format(ROOT_PATH, date, i)
+               path2 =  path2.format(ROOT_PATH, date, i)
                break
         f = open(path0, "w")
         f.write(output)
+        f.close()
+
+        f = open(path2, "w")
+        f.write(output1)
         f.close()
         return jsonify(path1)
     return blueprint
