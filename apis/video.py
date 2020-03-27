@@ -3,7 +3,9 @@ import os
 from flask import Blueprint, jsonify, request
 import datetime
 from dotenv import load_dotenv
+from apis.utils import remove_less_1000
 
+import shutil
 # LOAD CUSTOMIZED PACKAGE
 from app import db, Video
 
@@ -49,8 +51,13 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
 
     # desc: REQUEST FOR HLS PLAY
     # path: /play/<camera_id> [GET]
-    @blueprint.route(f'/{resource_prefix}/play/<camera_id>/<start>/<end>', methods=['GET'])
-    def play_hls(camera_id, start, end):
+    @blueprint.route(f'/{resource_prefix}/play/<camera_id>/<start>/<end>/<mode>/<video>', methods=['GET'])
+    def play_hls(camera_id, start, end, mode, video):
+        vod_url = video.replace("*", "/")
+        print(vod_url)
+        remove_less_1000(".{}".format("/share/m3u8/"), 10, 2)
+        if os.path.exists(".{}".format(vod_url)):
+            os.remove(".{}".format(vod_url))
         videos = []
         output = '''#EXTM3U
 #EXT-X-VERSION:3

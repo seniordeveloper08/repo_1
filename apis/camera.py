@@ -2,9 +2,10 @@
 import os
 from flask import Blueprint, jsonify, request
 from dotenv import load_dotenv
+import shutil
 
 # LOAD CUSTOMIZED PACKAGE
-from app import db, Camera, Thumbnail
+from app import db, Camera, Thumbnail, Video
 from sqlalchemy import or_, desc, not_
 
 # Load ENV Values
@@ -59,6 +60,9 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
     @blueprint.route(f'/{resource_prefix}/<id>', methods=['DELETE'])
     def delete_camera(id):
         # ADD NEW CAMERA
+        # shutil.rmtree('./share/{}'.format(id))
+        db.session.query(Video).filter_by(camera_id = id).delete()
+        db.session.query(Thumbnail).filter_by(camera_id = id).delete()
         db.session.query(Camera).filter_by(id = id).delete()
         db.session.commit()
 
@@ -66,8 +70,13 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
 
     # desc: USE CAMERA IN LIVE MOD
     # path: /cameras/<id> [GET]
-    @blueprint.route(f'/{resource_prefix}/<id>', methods=['GET'])
-    def live_mod(id):
+    @blueprint.route(f'/{resource_prefix}/<id>/<mode>/<video>', methods=['GET'])
+    def live_mod(id, mode, video):
+        vod_url = video.replace("*", "/")
+        if(mode == "VOD"):
+            if os.path.exists(".{}".format(vod_url)):
+                print("----------------------------------------",vod_url)
+                os.remove(".{}".format(vod_url))
         return jsonify({"id": id, "action": "Live MOD"})
 
     # desc: GET cameras WITH FILTERS

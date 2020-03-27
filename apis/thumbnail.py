@@ -60,9 +60,16 @@ def create_thumbnail_blueprint(blueprint_name: str, resource_type: str, resource
 
     # desc: GET THUMBNAILS WITH FILTERS
     # path: /thumbnail/<camera_id>/<start>/<end>/<duration> [GET]
-    @blueprint.route(f'/{resource_prefix}/<camera_id>/<start>/<end>/<duration>', methods=['GET'])
-    def search_thumbnail(camera_id, start, end, duration):
+    @blueprint.route(f'/{resource_prefix}/<camera_id>/<start>/<end>/<duration>/<mode>/<video>', methods=['GET'])
+    def search_thumbnail(camera_id, start, end, duration, mode, video):
         thumbnails = []
+
+        vod_url = video.replace("*", "/")
+        
+        if os.path.exists(".{}".format(vod_url)):
+            print("----------------------------------------",vod_url)
+            os.remove(".{}".format(vod_url))
+                
         start1 = datetime.strptime(start, '%Y-%m-%dT%H:%M').strftime("%Y-%m-%d %H:%M:%S")
         end1 = datetime.strptime(end, '%Y-%m-%dT%H:%M').strftime("%Y-%m-%d %H:%M:%S")
 
