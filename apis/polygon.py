@@ -47,6 +47,7 @@ def create_polygon_blueprint(blueprint_name: str, resource_type: str, resource_p
         for item in db.session.query(Polygon).filter_by(id = id):
             # Camera(body['name'], body['ipaddress'], body['location'], body["thumbnail"], body["online"], body['timezone'], "YES"))
             item.desc = body['desc']
+            item.position = body['position']
         db.session.commit()
 
         return jsonify({"msg" : "Success"})
