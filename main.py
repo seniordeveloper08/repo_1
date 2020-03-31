@@ -9,6 +9,7 @@ from app import app, db
 from apis.camera import create_camera_blueprint
 from apis.thumbnail import create_thumbnail_blueprint
 from apis.video import create_video_blueprint
+from apis.polygon import create_polygon_blueprint
 
 # LOAD ENV VARIABLE
 HOST = os.getenv("HOST")
@@ -41,6 +42,10 @@ app.register_blueprint(create_thumbnail_blueprint(
 # REGISTER APIS FOR VIDEOS
 app.register_blueprint(create_video_blueprint(
     blueprint_name="VideoBlueprint", resource_type="Video", resource_prefix="videos"), url_prefix="/api")
+
+# REGISTER APIS FOR POLYGONS
+app.register_blueprint(create_polygon_blueprint(
+    blueprint_name="PolygonBlueprint", resource_type="Polygon", resource_prefix="polygons"), url_prefix="/api")
 
 # RUN THE APP IN PORT 5000
 if __name__ == "__main__":

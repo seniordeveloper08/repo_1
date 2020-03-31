@@ -59,8 +59,8 @@ def create_camera_blueprint(blueprint_name: str, resource_type: str, resource_pr
     # path: /cameras/<id> [DELETE]
     @blueprint.route(f'/{resource_prefix}/<id>', methods=['DELETE'])
     def delete_camera(id):
-        # ADD NEW CAMERA
-        # shutil.rmtree('./share/{}'.format(id))
+        # DELETE NEW CAMERA
+        shutil.rmtree('./share/{}'.format(id))
         db.session.query(Video).filter_by(camera_id = id).delete()
         db.session.query(Thumbnail).filter_by(camera_id = id).delete()
         db.session.query(Camera).filter_by(id = id).delete()
