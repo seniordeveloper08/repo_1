@@ -21,7 +21,7 @@ def create_polygon_blueprint(blueprint_name: str, resource_type: str, resource_p
     @blueprint.route(f'/{resource_prefix}/<camera_id>', methods=['GET'])
     def get_items(camera_id):        
         polygons = []
-        for item in db.session.query(Polygon).filter_by(camera_id = camera_id):
+        for item in db.session.query(Polygon).filter_by(camera_id = camera_id).order_by(Polygon.id):
             del item.__dict__['_sa_instance_state']
             polygons.append(item.__dict__)
         return jsonify(polygons)
