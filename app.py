@@ -84,12 +84,15 @@ class Polygon(db.Model):
   name = db.Column(db.String(20), nullable=False)
   desc = db.Column(db.String(20), nullable=False)
   position = db.Column(db.String(1000), nullable=False)
+  color = db.Column(db.String(500), nullable=False)
+
   camera_id = db.Column(db.Integer, db.ForeignKey('camera.id'))
 
-  def __init__(self, name, desc, position, camera_id):
+  def __init__(self, name, desc, position, color , camera_id):
     self.name = name
     self.desc = desc
     self.position = position
+    self.color = color
     self.camera_id = camera_id
     
 

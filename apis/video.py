@@ -68,7 +68,7 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
         if os.path.exists(".{}".format(vod_url)):
             os.remove(".{}".format(vod_url))
         videos = []
-        output = '''#EXTM3U
+        output1 = output = '''#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:2
 #EXT-X-MEDIA-SEQUENCE:0
@@ -82,11 +82,13 @@ def create_video_blueprint(blueprint_name: str, resource_type: str, resource_pre
                 output = output+'#EXT-X-DISCONTINUITY\n'+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"+'#EXT-X-DISCONTINUITY\n'
             else:
                 output = output+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"
+                output1 = output1+"#EXTINF:{},\n".format(item.__dict__["duration"])+item.__dict__["path"]+"\n"
         output += "#EXT-X-ENDLIST"
+        output1 += "#EXT-X-ENDLIST"
         path0 = ".{}/m3u8/{}{}.m3u8"
         path1="{}/m3u8/{}{}.m3u8"
         path2=".{}/m3u8/download{}{}.m3u8"
-        output1 = output.replace("/share", "..")
+        output1 = output1.replace("/share", "..")
         i=0
         while(True):
             date = datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S")

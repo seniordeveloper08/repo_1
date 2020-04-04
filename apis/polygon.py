@@ -33,7 +33,7 @@ def create_polygon_blueprint(blueprint_name: str, resource_type: str, resource_p
         # ADD NEW POLYGON
         body = request.get_json()
         db.session.add(
-            Polygon(body['name'], body['desc'], body['position'], body['camera_id']))
+            Polygon(body['name'], body['desc'], body['position'], body['color'], body['camera_id']))
         db.session.commit()
 
         return jsonify("polygons")
