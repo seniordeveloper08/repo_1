@@ -18,7 +18,7 @@ def __rewrite_file_paths(f):
 
 # Run the ffmpeg command to convert the file
 def __covert_m3u8_file_to_mp4(f): 
-    command = ''.join(['ffmpeg -allowed_extensions ALL -i "', f, '" -c:v copy -c:a copy -f mp4 "', f.replace('.m3u8', '.mp4'), '"'])
+    command = ''.join(['ffmpeg -i "', f, '" -c:v libx264 -preset slow -crf 23 -c:a copy "', f.replace('.m3u8', '.mp4'), '"'])
     # print('Running command "' + command + '"')
     os.system(command)
 
