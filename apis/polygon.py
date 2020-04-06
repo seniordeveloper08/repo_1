@@ -50,6 +50,8 @@ def create_polygon_blueprint(blueprint_name: str, resource_type: str, resource_p
             item.position = body['position']
         db.session.commit()
 
+        print(id, body["position"], body['desc'])
+
         return jsonify({"msg" : "Success"})
     
     # desc: DELETE POLYGON'S INFO

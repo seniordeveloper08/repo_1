@@ -78,31 +78,31 @@ def create_thumbnail_blueprint(blueprint_name: str, resource_type: str, resource
             del item.__dict__['_sa_instance_state']
             thumbnails.append(item.__dict__)
         
-        images = []
-        sources = []
-        for item in thumbnails:
-            img1 = Image.open(item["path"].replace("/share", "./share"))
-            images.append(img1)
+        # images = []
+        # sources = []
+        # for item in thumbnails:
+        #     img1 = Image.open(item["path"].replace("/share", "./share"))
+        #     images.append(img1)
         
-        img_01_size = images[0].size
+        # img_01_size = images[0].size
 
-        new_im = Image.new('RGB', (5*img_01_size[0],6*img_01_size[1]), (250,250,250))
-        j = 0
-        for i in range(math.ceil(len(images)/30)):
-            for k in range(5):
-                for l in range(6):
-                    if(i*30+j < len(images)):
-                        new_im.paste(images[i*30+j], (k*img_01_size[0], l*img_01_size[1]))
-                        thumbnails[i*30+j]["x"] = k
-                        thumbnails[i*30+j]["y"] = l
-                        thumbnails[i*30+j]["source"] = "merged_images{}.png".format(i)
-                    j+=1
+        # new_im = Image.new('RGB', (5*img_01_size[0],6*img_01_size[1]), (250,250,250))
+        # j = 0
+        # for i in range(math.ceil(len(images)/30)):
+        #     for k in range(5):
+        #         for l in range(6):
+        #             if(i*30+j < len(images)):
+        #                 new_im.paste(images[i*30+j], (k*img_01_size[0], l*img_01_size[1]))
+        #                 thumbnails[i*30+j]["x"] = k
+        #                 thumbnails[i*30+j]["y"] = l
+        #                 thumbnails[i*30+j]["source"] = "merged_images{}.png".format(i)
+        #             j+=1
 
-            new_im.save("merged_images{}.png".format(i), "PNG")
-            sources.append("merged_images{}.png".format(i))
-            new_im = Image.new('RGB', (5*img_01_size[0],6*img_01_size[1]), (250,250,250))
-            j=0
+        #     new_im.save("merged_images{}.png".format(i), "PNG")
+        #     sources.append("merged_images{}.png".format(i))
+        #     new_im = Image.new('RGB', (5*img_01_size[0],6*img_01_size[1]), (250,250,250))
+        #     j=0
 
-        return jsonify(sources, thumbnails)
+        return jsonify(thumbnails)
 
     return blueprint
